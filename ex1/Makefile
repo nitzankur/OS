@@ -15,7 +15,7 @@ TARGETS = $(OSMLIB)
 TAR=tar
 TARFLAGS=-cvf
 TARNAME=ex1.tar
-TARSRCS=$(LIBSRC) Makefile README graph.png osm.cpp
+TARSRCS=$(LIBSRC) Makefile README plot.png osm.cpp
 
 all: $(TARGETS)
 
