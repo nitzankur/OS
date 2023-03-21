@@ -19,7 +19,6 @@ double osm_operation_time(unsigned int iterations) {
     struct timeval iteration_end_time{};
 
 
-
     double seconds = 0;
     double microseconds = 0;
 
@@ -61,8 +60,6 @@ double osm_function_time(unsigned int iterations) {
     struct timeval iteration_start_time{};
     struct timeval iteration_end_time{};
 
-
-
     double seconds = 0;
     double microseconds = 0;
 
@@ -74,9 +71,16 @@ double osm_function_time(unsigned int iterations) {
             return -1;
         }
 
-        for (int j = 0; j < ROLLING_FACTOR; j++) {
-            empty_func();
-        }
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
+        empty_func();
 
         if (gettimeofday (&iteration_end_time, nullptr) == -1) {
             return -1;
@@ -109,9 +113,17 @@ double osm_syscall_time(unsigned int iterations) {
             return -1;
         }
 
-        for (int j = 0; j < ROLLING_FACTOR; j++) {
-            OSM_NULLSYSCALL;
-        }
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+        OSM_NULLSYSCALL;
+
 
         if (gettimeofday (&iteration_end_time, nullptr) == -1) {
             return -1;
@@ -125,8 +137,8 @@ double osm_syscall_time(unsigned int iterations) {
 }
 
 int main() {
-    std::cout << osm_operation_time (1000) << std::endl;
-    std::cout << osm_function_time (1000) << std::endl;
-    std::cout << osm_syscall_time (1000) << std::endl;
+    std::cout << osm_operation_time (1000000) << std::endl;
+    std::cout << osm_function_time (1000000) << std::endl;
+    std::cout << osm_syscall_time (1000000) << std::endl;
     return 0;
 }
