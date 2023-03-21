@@ -27,7 +27,7 @@ double osm_operation_time(unsigned int iterations) {
     iterations = iterations + (ROLLING_FACTOR - (iterations % ROLLING_FACTOR));
 
     for (int i = 0; i < iterations; i++) {
-        if (gettimeofday (&iteration_start_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_start_time, NULL) == -1) {
             return -1;
         }
 
@@ -42,7 +42,7 @@ double osm_operation_time(unsigned int iterations) {
         1+1;
         1+1;
 
-        if (gettimeofday (&iteration_end_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_end_time, NULL) == -1) {
             return -1;
         }
 
@@ -70,7 +70,7 @@ double osm_function_time(unsigned int iterations) {
     iterations = iterations + (ROLLING_FACTOR - (iterations % ROLLING_FACTOR));
 
     for (int i = 0; i < iterations; i++) {
-        if (gettimeofday (&iteration_start_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_start_time, NULL) == -1) {
             return -1;
         }
 
@@ -78,7 +78,7 @@ double osm_function_time(unsigned int iterations) {
             empty_func();
         }
 
-        if (gettimeofday (&iteration_end_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_end_time, NULL) == -1) {
             return -1;
         }
 
@@ -105,7 +105,7 @@ double osm_syscall_time(unsigned int iterations) {
     iterations = iterations + (ROLLING_FACTOR - (iterations % ROLLING_FACTOR));
 
     for (int i = 0; i < iterations; i++) {
-        if (gettimeofday (&iteration_start_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_start_time, NULL) == -1) {
             return -1;
         }
 
@@ -113,7 +113,7 @@ double osm_syscall_time(unsigned int iterations) {
             OSM_NULLSYSCALL;
         }
 
-        if (gettimeofday (&iteration_end_time, nullptr) == -1) {
+        if (gettimeofday (&iteration_end_time, NULL) == -1) {
             return -1;
         }
 
