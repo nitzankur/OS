@@ -1,47 +1,81 @@
-1. make new folder /welcome_dir_1 with allowing ALL users read/write/execute
-permissions
+shacham,nitzanknoll
+
+Nitzan Knoll 208562942, Roi Shacham 315523274
+
+Exercise 1 OS
+
+Files:
+osm.cpp - a file with implementations of the function declared in osm.h
+plot.png - the requested graph with runtimes
+Makefile
+
+Remarks - in the below sections we wrote explenation for each line from the strace,
+where each line is numbered, starting from the first relevent line
+("mkdir("./welcome_dir_1", 0777)          = 0")
+
+1. make new folder /welcome_dir_1 with allowing ALL users read/write/execute permissions
+
 2.make new folder ./welcome_dir_1/welcome_dir_2 with allowing ALL users read/write/execute
+
 3. we use this call to get it's output, which is the current end of the data segment,
 to know the current size the of heap memory the program is using.
+
 4. We allocate ourselves more memory.
+
 5. create a new txt files inside "welcome_dir_1/welcome_dir_2" called "welcome_file.txt",
 with write only premissions, and our user ID attached to it.
-6.  reads the localtime file from our computer
-7. The fstat function return information about a file. 4 - is the
-file descriptor of the file for which we want to retrieve information.
-{st_mode=S_IFREG|0644, st_size=2388, ...} - This is a structure containing the file information that
- fstat will retrieve.
- In this case, it shows that the file with file descriptor 4 is a regular file (S_IFREG) with
- permissions of 0644.
+6. reads the localtime file from our computer
+
+7. The fstat function return information about a file. 4 - is the file descriptor of the file
+for which we want to retrieve information.
+
+8. This is a structure containing the file information that fstat will retrieve. In this case,
+ it shows that the file with file descriptor 4 is a regular file (S_IFREG) with permissions of 0644.
  It also shows that the file size is 2388 bytes.
  = 0: This is the return value of the fstat system call. In this case, the return value is 0,
  which indicates that the system call executed successfully.
-8. is e
-9.read(4, "TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 4096) = 2388 - The read function read a line
- from standard input. 4: This is the file descriptor of the file from which we want to read data, the second argument
- is a buffer where the data read from the file will be stored ,4096 is the maximum amount of data that can be read.
+
+9. Same line
+
+10.t he read function read a line from standard input.
+ 4: This is the file descriptor of the file from which we want to read data, the second argument
+ is a buffer where the data read from the file will be stored,
+ 4096 is the maximum amount of data that can be read.
  2388: This is the amount of data actually read by the read system call.
-lseek(4, -1506, SEEK_CUR)               = 882 - the lseek function is repositions the offset of the open file associated
+
+11. the lseek function is repositions the offset of the open file associated
  with the file descriptor fildes to the argument offset according to the directive.
  4 - This is the file descriptor of the file whose current position we want to change.
- -1506: This is the amount by which we want to change the current position. A negative value means we want to move
-  backwards in the file. In this case, we're moving back by 1506 bytes.
-   This is the origin from which we want to seek. In this case, we're seeking from the current position within the file.
-   882 is indicates that the system call executed successfully and the current position within the file was changed
-    by moving back by 1506 bytes.
-read(4, "TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 4096) = 1506 This is the command as we
-described above, this time with a different return value. 1506 is the amount of data actually read by the read system call
-close(4)                                = 0 close file 4 - the return value - 0 indicates that the system call executed
- successfully
-fstat(3, {st_mode=S_IFREG|0644, st_size=0, ...}) = 0 We run fstat as we ran before on document 3 instead of document 4
- and the siz document is  0 i.e. an empty document. the return value is the same
-write(3, "welcome to OS-2023", 18) = 18" - writes 18 bits to "welcome_file.txt", with the txt "welcome to OS-2023"
-close(3)                                = 0 close file 3 - the return value - 0 indicates that the system call executed
-"unlink("./welcome_dir_1/welcome_dir_2/welcome_file.txt") = 0" - succesfully deletes the file "welcome_file.txt"
-"unlink("./welcome_dir_1/welcome_dir_2") = -1" - tries to delete the directory "welcome_dir_2", but the unline
- command only works on files and not on directories
-"rmdir("./welcome_dir_1/welcome_dir_2") = 0" - succesfully deletes the folder "welcme_dir_2"
-"unlink("./welcome_dir_1") = -1 EISDIR (Is a directory)" - tries to delete the directory "welcome_dir_1", but the
- unline command only works on files and not on directories
-"rmdir("./welcome_dir_1/welcome_dir_2") = 0" - succesfully deletes the folder "welcme_dir_1"
-"exit_group(0) = ?" - program succesfully ended
+ -1506: This is the amount by which we want to change the current position.
+  A negative value means we want to move backwards in the file. In this case,
+  we're moving back by 1506 bytes.
+  This is the origin from which we want to seek.
+  In this case, we're seeking from the current position within the file.
+  882 indicates that the system call executed successfully,
+  and the current position within the file was changed by moving back by 1506 bytes.
+
+12. This is the command as we described above, this time with a different return value.
+1506 is the amount of data actually read by the read system call
+
+13. close file 4 - the return value - 0 indicates that the system call executed successfully
+
+14. We run fstat as we ran before on document 3 instead of document 4,
+ and the size of the document is  0 i.e. an empty document. the return value is the same
+
+15. writes 18 bits to "welcome_file.txt", with the txt "welcome to OS-2023"
+
+16. close file 3 - the return value - 0 indicates that the system call executed
+
+17. succesfully deletes the file "welcome_file.txt"
+
+18. tries to delete the directory "welcome_dir_2",
+but the unline command only works on files and not on directories
+
+19. succesfully deletes the folder "welcme_dir_2"
+
+20. tries to delete the directory "welcome_dir_1",
+but the unline command only works on files and not on directories
+
+21. succesfully deletes the folder "welcme_dir_1"
+
+22. program succesfully ended
