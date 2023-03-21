@@ -1,22 +1,23 @@
-mkdir("./welcome_dir_1", 0777)          = 0 - make new folder /welcome_dir_1 with allowing ALL users read/write/execute
+1. make new folder /welcome_dir_1 with allowing ALL users read/write/execute
 permissions
-mkdir("./welcome_dir_1/welcome_dir_2", 0777) = 0
-brk (NULL) - we use this call to get it's output, which is the current end of the data segment,
+2.make new folder ./welcome_dir_1/welcome_dir_2 with allowing ALL users read/write/execute
+3. we use this call to get it's output, which is the current end of the data segment,
 to know the current size the of heap memory the program is using.
-brk(0x5569ff734000) - We allocate ourselves more memory.
-openat(AT_FDCWD, "./welcome_dir_1/welcome_dir_2/welcome_file.txt", O_WRONLY|O_CREAT|O_TRUNC, 0666) -
-create a new txt files inside "welcome_dir_1/welcome_dir_2" called "welcome_file.txt", with write only premissions,
- and our user ID attached to it.
-"openat(AT_FDCWD, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 4" - reads the localtime file from our computer
-fstat(4, {st_mode=S_IFREG|0644, st_size=2388, ...}) = 0 - The fstat function return information about a file. 4 - is the
+4. We allocate ourselves more memory.
+5. create a new txt files inside "welcome_dir_1/welcome_dir_2" called "welcome_file.txt",
+with write only premissions, and our user ID attached to it.
+6.  reads the localtime file from our computer
+7. The fstat function return information about a file. 4 - is the
 file descriptor of the file for which we want to retrieve information.
-{st_mode=S_IFREG|0644, st_size=2388, ...} - This is a structure containing the file information that fstat will retrieve.
- In this case, it shows that the file with file descriptor 4 is a regular file (S_IFREG) with permissions of 0644.
+{st_mode=S_IFREG|0644, st_size=2388, ...} - This is a structure containing the file information that
+ fstat will retrieve.
+ In this case, it shows that the file with file descriptor 4 is a regular file (S_IFREG) with
+ permissions of 0644.
  It also shows that the file size is 2388 bytes.
  = 0: This is the return value of the fstat system call. In this case, the return value is 0,
  which indicates that the system call executed successfully.
-fstat(4, {st_mode=S_IFREG|0644, st_size=2388, ...}) = 0
-read(4, "TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 4096) = 2388 - The read function read a line
+8. is e
+9.read(4, "TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 4096) = 2388 - The read function read a line
  from standard input. 4: This is the file descriptor of the file from which we want to read data, the second argument
  is a buffer where the data read from the file will be stored ,4096 is the maximum amount of data that can be read.
  2388: This is the amount of data actually read by the read system call.
