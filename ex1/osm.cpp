@@ -34,7 +34,7 @@ double osm_operation_time(unsigned int iterations) {
         }
 
         for (int j = 0; j < ROLLING_FACTOR; j++) {
-            1+1;
+            x=1+1;
         }
 
         if (gettimeofday (&iteration_end_time, nullptr) == -1) {
