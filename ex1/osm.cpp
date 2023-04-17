@@ -1,6 +1,9 @@
 #include "osm.h"
 #include <sys/time.h>
 #include <iostream>
+#include <cstddef>
+
+#pragma GCC diagnostic ignored "-Wunused-value"
 
 #define ROLLING_FACTOR 10
 #define SEC_TO_MICRO 1000000

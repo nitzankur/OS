@@ -1,18 +1,18 @@
-shacham, nitzanknoll
-Roi Shacham (315523274), Nitzan Knoll (208562942)
-EX: 1
+shacham,nitzanknoll
 
-FILES:
-osm.cpp -- a file with implementations of the function declared in osm.h
-graph.png -- the requested graph with runtimes
+Nitzan Knoll 208562942, Roi Shacham 315523274
+
+Exercise 1 OS
+
+Files:
+osm.cpp - a file with implementations of the function declared in osm.h
+plot.png - the requested graph with runtimes
 Makefile
+README
 
-REMARKS:
-in the below sections we wrote explenation for each line from the strace,
+Remarks - in the below sections we wrote explenation for each line from the strace,
 where each line is numbered, starting from the first relevent line
 ("mkdir("./welcome_dir_1", 0777)          = 0")
-
-ANSWERS:
 
 1. make new folder /welcome_dir_1 with allowing ALL users read/write/execute permissions
 
