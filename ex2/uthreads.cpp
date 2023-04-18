@@ -7,6 +7,9 @@
 
 #define QUANTUM_ERROR "the quantum_usecs should be positive"
 #define BLOCKED_THE_MAIN_THREAD "can't blocked the main thread"
+#define NUMBER_THREAD_ID_IS_NOT_VALID "number thread id is not valid"
+#define SUCCESS 0
+#define FAILURE -1
 #define JB_SP 6
 #define JB_PC 7
 
@@ -69,24 +72,24 @@ public:
 
     float time_remaining(){
         //todo: understand how we follow the time of the thread
-        return 0;
+        return SUCCESS;
     }
 };
 
 static deque<Thread*> ready_queue(MAX_THREAD_NUM);
 static deque<Thread*> blocked_queue(MAX_THREAD_NUM);
 static Thread* running_thread;
-static int QUANTUM_USECS = 0;
+static int QUANTUM_USECS = SUCCESS;
 static struct sigaction sa;
 static sigset_t set;
 
 address_t translate_address(address_t addr)
 {
     address_t ret;
-    asm volatile("xor    %%fs:0x30,%0\n"
-                 "rol    $0x11,%0\n"
+    asm volatile("xor    %%fs:SUCCESSx3SUCCESS,%SUCCESS\n"
+                 "rol    $SUCCESSx11,%SUCCESS\n"
             : "=g" (ret)
-            : "0" (addr));
+            : "SUCCESS" (addr));
     return ret;
 }
 
@@ -112,18 +115,18 @@ int find_smallest_free_id() {
     }
 
     cout << "Failed to find a free ID" << endl;
-    return -1;
+    return FAILURE;
 }
 
 int uthread_init(int quantum_usecs){
     if (quantum_usecs < QUANTUM_USECS){
         std::cerr <<QUANTUM_ERROR<<std::endl;
-        return -1;
+        return FAILURE;
     }
     QUANTUM_USECS = QUANTUM_USECS;
-    auto threads_0 = new Thread(RUNNING, 0);
-//    running_thread = threads_0->get_id();
-    return 0;
+    auto threads_SUCCESS = new Thread(RUNNING, SUCCESS);
+//    running_thread = threads_SUCCESS->get_id();
+    return SUCCESS;
 }
 
 void setup_thread(Thread* thread, char *stack, thread_entry_point entry_point)
@@ -140,7 +143,7 @@ void setup_thread(Thread* thread, char *stack, thread_entry_point entry_point)
 
 int uthread_spawn(thread_entry_point entry_point) {
     auto new_thread_id = find_smallest_free_id();
-    if (new_thread_id == -1) {
+    if (new_thread_id == FAILURE) {
         cerr << "thread library error: Threads amount exceeded the max thread amount limit" << endl;
     }
 
@@ -150,7 +153,7 @@ int uthread_spawn(thread_entry_point entry_point) {
 }
 int sleep(){
     //TODO - implement sleep function
-    return 0;
+    return SUCCESS;
 }
 
 int round_robin_scheduling(scheduling_states schedulingStates){
@@ -166,7 +169,7 @@ int round_robin_scheduling(scheduling_states schedulingStates){
             //current_time +=
 
     }
-    return 0;
+    return SUCCESS;
 
 }
 
@@ -174,23 +177,57 @@ int uthread_resume(){
 
 }
 
+Thread* find_the_thread(int tid){
+    for (auto thread : ready_queue) {
+       if(thread->get_id() == tid){
+           return thread;
+       }
+    }
+    return NULL;
+
+}
+
+void unblock_helper(){
+
+}
+
+void block_helper(){
+    sigprocmask(SIG_UNBLOCK,&set,NULL);
+}
+
 int uthread_block(int tid){
-    // if thread tid == 0
+    //TODO: UNDERSTAND WHEN IS SHOULD BE BLOCKED AND WHEN UNBLOCKED
+    // if thread tid ==0
     if(tid==0){
-        std::cerr<<"BLOCKED_THE_MAIN_THREAD"<<endl;
-        return -1;
+        std::cerr<<BLOCKED_THE_MAIN_THREAD<<endl;
+        return FAILURE;
+    }
+    Thread* thread = find_the_thread(tid);
+    if(tid<SUCCESS||tid > MAX_THREAD_NUM || thread == NULL){
+        std::cerr<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        return FAILURE;
     }
     //if thread blocking himself
-    if(thread_blocking_himself){
-
+    if(tid==running_thread->get_id() ){
+        std::cerr<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        return FAILURE;
+    }
+    // if thread ia already in block state
+    if(thread->get_states() == BLOCKING){
+        unblock_helper();
+        return SUCCESS;
     }
     //block the signal
+    else{
+
+    }
     sigprocmask(SIG_BLOCK,&set,NULL);
+    return SUCCESS;
 }
 
 int uthread_sleep(int num_quantums){
 
-    return 0;
+    return SUCCESS;
 }
 
 
