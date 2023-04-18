@@ -1,7 +1,47 @@
-1.a. sigsetjmp - Put a "bookmark" in the code - save the stack context and CPU state in env for
- later use
- siglongjmp - Jumps to the code location to where the sigsetjmp has been called,
- and restore CPU state specified by env
- b. The sigsetjmp and the siglongjmp affect about the mask in this way:
-    If savesigs is non-zero, saves the current signal mask as well, and
-    if the signal mask was saved in sigsetjmp, it will be restored as well in siglongjmp
+shacham,nitzanknoll
+
+Nitzan Knoll 208562942, Roi Shacham 315523274
+
+Exercise 2 OS
+
+Files:
+osm.cpp - a file with implementations of the function declared in osm.h
+plot.png - the requested graph with runtimes
+Makefile
+README
+
+1.a. The sigsetjmp and siglongjmp functions are used to perform non-local jumps in a program.
+ sigsetjmp is used to set a "bookmark" in the code by saving the stack context and CPU state
+ in a jmp_buf structure specified by env, which can be later used by siglongjmp to jump back to
+ the saved location and restore the saved CPU state.
+
+  b. In addition to saving and restoring the CPU state, the sigsetjmp and siglongjmp functions
+  also affect the signal mask used by the program. If the savesigs argument to sigsetjmp is
+  non-zero, the current signal mask is saved along with the CPU state. If a signal mask was saved
+  in sigsetjmp, it will be restored along with the CPU state in siglongjmp. This ensures that any
+  pending signals that were blocked at the time of the sigsetjmp call will remain blocked after
+  the siglongjmp call.
+2.One example of where user-level threads could be advantageous is in a multimedia application,
+  like a video player. In such an application, several tasks may be performed concurrently,
+  including decoding the video stream, rendering the video frames on the screen,
+  and handling user input.
+3.The advantages of creating a process over a kernel level thread - the processes are "protected"
+ from each other each has its own memory, and its own resources. The disadvantages of a processor
+ over a kernel level thread are that they require a lower overhead than a process
+4.a. pid 396126
+  b. kill 396126
+  c.During the "killing" of the application (firefox) there was a SIGTERM signal that stopped
+  the process completely, also there was a hardware interrupt caused by the activation of the
+  keyboard, the shell is an application in itself, therefore when using the shell the printing
+  of the commands and the printing of the output of the command ps - A software interrupt was
+  caused.
+5.Real time is the actual real world time it takes to preform a process, usually measured in real
+  time units (Seconds, Milliseconds...)
+  Virtual time on the other hand, is an abstract time measurement of how long it takes the CPU to
+  preform a process, usually measured in units that are the Ticks of the CPU. It is used to provide
+  a way to measure the progress of a process over time.
+  One example of real-time processing is in video games, where the time it takes for a particular
+  action to occur needs to be measured and optimized to ensure the game runs smoothly. This means
+  that the game needs to respond to user input within a specified timeframe, or it may lead to a
+  less responsive and less enjoyable gaming experience.
+
