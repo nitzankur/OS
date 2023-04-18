@@ -35,13 +35,12 @@ README
   keyboard, the shell is an application in itself, therefore when using the shell the printing
   of the commands and the printing of the output of the command ps - A software interrupt was
   caused.
-5.Real time is the actual real world time it takes to preform a process, usually measured in real
-  time units (Seconds, Milliseconds...)
-  Virtual time on the other hand, is an abstract time measurement of how long it takes the CPU to
-  preform a process, usually measured in units that are the Ticks of the CPU. It is used to provide
-  a way to measure the progress of a process over time.
-  One example of real-time processing is in video games, where the time it takes for a particular
-  action to occur needs to be measured and optimized to ensure the game runs smoothly. This means
-  that the game needs to respond to user input within a specified timeframe, or it may lead to a
-  less responsive and less enjoyable gaming experience.
+5.Real time is the actual real world time it takes to preform a process,
+ usually measured in real time units (Seconds, Milliseconds...)
+  Virtual time on the other hand, is the time it took the process to run from the OS  perspective,
+   without taking into consideration the time it took to handle interruptions
 
+  In Video games for example, we might want to use precise real time to determine things
+  (for example an enemy to shot every 1 real time second)
+  But if we would like to know how much time it takes the CPU to preform an arithmetic,
+  we would want to use virtual time because we want to result to be independent of interrupts
