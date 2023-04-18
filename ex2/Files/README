@@ -1,0 +1,5 @@
+1.a. sigsetjmp - Put a "bookmark" in the code to where we are in the code
+ siglongjmp - Jumps to the code location to where the sigsetjmp has been called,
+ and restore CPU state specified by env
+ b. The sigsetjmp and the siglongjmp affect about the mask in this way:
+    If the signal mask was saved in sigsetjmp, it will be restored as well
