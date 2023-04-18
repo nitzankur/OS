@@ -64,7 +64,7 @@ int uthread_init(int quantum_usecs){
     }
     QUANTUM_USECS = QUANTUM_USECS;
     auto threads_0 = new Threads(RUNNING,find_smallest_free_id(ready_queue,-1));
-    running_thread = threads_0->get_id();
+//    running_thread = threads_0->get_id();
     return 0;
 
 
