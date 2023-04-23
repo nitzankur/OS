@@ -86,6 +86,8 @@ struct sigaction quantum_tick_action;
 static int program_quantum_usecs = 0;
 struct itimerval program_timer;
 static sigset_t set;
+
+//====help function====
 void unblock_helper(){
     sigprocmask(SIG_UNBLOCK,&set,nullptr);
 }
@@ -211,7 +213,6 @@ void round_robin_scheduling(int schedulingStates) {
             uthred_running();
             break;
     }
-    //TODO: understand when to do sigprocmask
 
 }
 
@@ -240,6 +241,7 @@ int initialize_global_timer(int quantum_usecs) {
 
     return SUCCESS;
 }
+//====library function====
 
 
 int uthread_init(int quantum_usecs) {
@@ -259,12 +261,41 @@ int uthread_init(int quantum_usecs) {
     return SUCCESS;
 }
 
+int uthread_spawn(thread_entry_point entry_point) {
+    block_helper();
+    if (entry_point == nullptr) {
+        cerr << THREAD_LIBRARY_ERROR << NULL_ENTRY_POINT_ERROR << endl;
+        delete_all_threads();
+        unblock_helper();
+        return FAILURE;
+    }
+
+    auto new_thread_id = find_smallest_free_id();
+    if (new_thread_id == FAILURE) {
+        cerr << THREAD_LIBRARY_ERROR << MAX_NUMBER_OF_THREADS << endl;
+        unblock_helper();
+        return FAILURE;
+    }
+
+    auto new_thread = new (nothrow) Thread(READY, new_thread_id);
+    if (running_thread == nullptr) {
+        cerr << SYSTEM_ERROR << MEMORY_ALLOCATION_FAILED_ERROR << endl;
+        unblock_helper();
+        exit(EXIT_FAILURE);
+    }
+
+    setup_thread(new_thread, entry_point);
+    ready_queue.push_back(new_thread);
+    unblock_helper();
+    return new_thread_id;
+}
+
 int uthread_terminate(int tid) {
     block_helper();
     auto thread = find_thread(tid);
     if(thread == NULL){
-        unblock_helper();
         std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        unblock_helper();
         return FAILURE;
     }
     if (tid == 0) {
@@ -291,10 +322,42 @@ int uthread_terminate(int tid) {
     return SUCCESS;
 }
 
+int uthread_block(int tid) {
+    block_helper();
+    if(tid==0){
+        std::cerr<<THREAD_LIBRARY_ERROR<<BLOCKED_THE_MAIN_THREAD<<endl;
+        unblock_helper();
+        return FAILURE;
+    }
+
+    Thread* thread = find_thread(tid);
+    if(tid<SUCCESS||tid > MAX_THREAD_NUM || thread == NULL) {
+        std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        unblock_helper();
+        return FAILURE;
+    }
+    //if thread blocking himself
+    if(tid==running_thread->get_id() ) {
+        unblock_helper();
+        round_robin_scheduling(BLOCKED_HIMSELF);
+    }
+    // if thread ia already in block state
+    if(thread->get_states() == BLOCKING){
+        unblock_helper();
+        return SUCCESS;
+    }
+    thread->change_states(BLOCKING);
+    blocked_queue.push_back(thread);
+    unblock_helper();
+    return SUCCESS;
+}
+
 int uthread_resume(int tid) {
+    block_helper();
     Thread* thread = find_thread(tid);
     if(thread == NULL) {
         std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        unblock_helper();
         return FAILURE;
     }
     if (thread->get_states() == BLOCKING){
@@ -303,6 +366,31 @@ int uthread_resume(int tid) {
         ready_queue.push_back(thread);
     }
     return SUCCESS;
+}
+
+int uthread_sleep(int num_quantums) {
+    block_helper();
+    if (running_thread->get_id() == 0) {
+        cerr << THREAD_LIBRARY_ERROR << MAIN_THREAD_SLEEP_ERROR << endl;
+        unblock_helper();
+        return FAILURE;
+    }
+
+    if (num_quantums <= 0) {
+        cerr << THREAD_LIBRARY_ERROR << NON_POSITIVE_NUMBER_OF_SLEEP_QUANTUMS_ERROR << endl;
+        unblock_helper();
+        return FAILURE;
+    }
+
+    running_thread->set_quantums_till_wake_up(num_quantums);
+    unblock_helper();
+    round_robin_scheduling(BLOCKED_HIMSELF);
+    unblock_helper();
+    return SUCCESS;
+}
+
+int uthread_get_tid() {
+    return running_thread->get_id();
 }
 
 
