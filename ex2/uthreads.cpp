@@ -86,6 +86,13 @@ struct sigaction quantum_tick_action;
 static int program_quantum_usecs = 0;
 struct itimerval program_timer;
 static sigset_t set;
+void unblock_helper(){
+    sigprocmask(SIG_UNBLOCK,&set,nullptr);
+}
+
+void block_helper(){
+    sigprocmask(SIG_BLOCK,&set,nullptr);
+}
 
 address_t translate_address(address_t addr)
 {
@@ -127,10 +134,9 @@ int uthread_init(int quantum_usecs){
         std::cerr <<QUANTUM_ERROR<<std::endl;
         return FAILURE;
     }
-    QUANTUM_USECS = QUANTUM_USECS;
-    auto threads_SUCCESS = new Thread(RUNNING, SUCCESS);
-//    running_thread = threads_SUCCESS->get_id();
-    return SUCCESS;
+
+    return NULL;
+
 }
 
 void setup_thread(Thread* thread, char *stack, thread_entry_point entry_point)
@@ -165,9 +171,8 @@ void uthred_running() {
     next_thread->change_states(RUNNING);
     next_thread->increase_quantums();
     running_thread = next_thread;
-//    initialize_global_timer(program_quantum_usecs);
-    //TODO: SET PROCMASK
     ready_queue.pop_front();
+    unblock_helper();
     siglongjmp(next_thread->get_env(),1);
 }
 
@@ -176,30 +181,41 @@ void round_robin_scheduling(int schedulingStates) {
     int ret_val;
     switch(schedulingStates){
         case BLOCKED_HIMSELF:
-            uthread_sleep(running_thread->get_id());
-            delete_thread_from_ready_queue(running_thread->get_id());
-            uthread_resume( blocked_queue.front()->get_id());
+            blocked_queue.push_back(running_thread);
+            running_thread->change_states(BLOCKING);
+            if (setitimer(ITIMER_VIRTUAL, &program_timer, NULL)) {
+                cerr << SYSTEM_ERROR << SET_TIMER_ERROR << endl;
+                delete_all_threads();
+                exit(EXIT_CODE);
+            }
             ret_val = sigsetjmp(running_thread->get_env(), 1);
             if(ret_val == 0){
                 uthred_running();
             }
             break;
         case QUANTUM_EXPIRED:
-            delete_thread_from_ready_queue(running_thread->get_id());
+            running_thread->change_states(READY);
             ready_queue.push_back(running_thread);
             ret_val = sigsetjmp(running_thread->get_env(), 1);
-            if(ret_val == 0) {
+            if(ret_val == 0){
                 uthred_running();
             }
             break;
         case TERMINATE:
-        default:
+            if (setitimer(ITIMER_VIRTUAL, &program_timer, NULL)) {
+                cerr << SYSTEM_ERROR << SET_TIMER_ERROR << endl;
+                delete_all_threads();
+                exit(EXIT_CODE);
 
-
+            }
+            uthred_running();
             break;
-
     }
+    //TODO: understand when to do sigprocmask
+
 }
+
+
 
 int initialize_global_timer(int quantum_usecs) {
     if (quantum_usecs < 0) {
@@ -227,19 +243,57 @@ int initialize_global_timer(int quantum_usecs) {
 
 
 int uthread_init(int quantum_usecs) {
-    if (initialize_global_timer(quantum_usecs) == FAILURE) {
-        return FAILURE;
+    block_helper();
+    running_thread = new (nothrow) Thread(RUNNING, 0);
+    if (running_thread == nullptr) {
+        cerr << SYSTEM_ERROR << MEMORY_ALLOCATION_FAILED_ERROR << endl;
+        unblock_helper();
+        exit(FAILURE);
     }
 
-    auto threads_SUCCESS = new Thread(RUNNING, SUCCESS);
-//    running_thread = threads_SUCCESS->get_id();
+    if (initialize_global_timer(quantum_usecs) == FAILURE) {
+        unblock_helper();
+        return FAILURE;
+    }
+    unblock_helper();
     return SUCCESS;
 }
 
-
-int uthread_resume(int tid){
-    Thread* thread = find_the_thread(tid);
+int uthread_terminate(int tid) {
+    block_helper();
+    auto thread = find_thread(tid);
     if(thread == NULL){
+        unblock_helper();
+        std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
+        return FAILURE;
+    }
+    if (tid == 0) {
+        delete_all_threads();
+        unblock_helper();
+        exit(0);
+    }
+    switch (thread->get_states()){
+        case READY:
+            delete_thread_from_queue(tid, true);
+            delete(thread);
+            break;
+        case BLOCKING:
+            delete_thread_from_queue(tid, false);
+            delete(thread);
+            break;
+        case RUNNING:
+            running_thread = nullptr;
+            delete(thread);
+            unblock_helper();
+            round_robin_scheduling(TERMINATE);
+    }
+    unblock_helper();
+    return SUCCESS;
+}
+
+int uthread_resume(int tid) {
+    Thread* thread = find_thread(tid);
+    if(thread == NULL) {
         std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
         return FAILURE;
     }
@@ -257,18 +311,17 @@ void unblock_helper(){
 
 }
 
-void block_helper(){
-    sigprocmask(SIG_UNBLOCK,&set,NULL);
-}
-
-
-int uthread_block(int tid){
+int uthread_block(int tid) {
+    block_helper();
     if(tid==0){
+        unblock_helper();
         std::cerr<<THREAD_LIBRARY_ERROR<<BLOCKED_THE_MAIN_THREAD<<endl;
         return FAILURE;
     }
-    Thread* thread = find_the_thread(tid);
-    if(tid<SUCCESS||tid > MAX_THREAD_NUM || thread == NULL){
+
+    Thread* thread = find_thread(tid);
+    if(tid<SUCCESS||tid > MAX_THREAD_NUM || thread == NULL) {
+        unblock_helper();
         std::cerr<<THREAD_LIBRARY_ERROR<<NUMBER_THREAD_ID_IS_NOT_VALID<<endl;
         return FAILURE;
     }
@@ -282,8 +335,9 @@ int uthread_block(int tid){
         unblock_helper();
         return SUCCESS;
     }
-    //TODO: understand when to do sigblock and when unblock
-    sigprocmask(SIG_BLOCK,&set,NULL);
+    thread->change_states(BLOCKING);
+    blocked_queue.push_back(thread);
+    unblock_helper();
     return SUCCESS;
 }
 
