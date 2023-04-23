@@ -142,9 +142,9 @@ void setup(void)
 }
 
 
-int main(void)
-{
-    setup();
-    jump_to_thread(0);
-    return 0;
-}
+//int main(void)
+//{
+//    setup();
+//    jump_to_thread(0);
+//    return 0;
+//}

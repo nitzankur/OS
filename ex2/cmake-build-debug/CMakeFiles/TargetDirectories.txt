@@ -1,3 +1,0 @@
-C:/Users/mikia/Desktop/CS/Year 3 Semester B/OS/Exercises/OS/ex2/cmake-build-debug/CMakeFiles/ex2.dir
-C:/Users/mikia/Desktop/CS/Year 3 Semester B/OS/Exercises/OS/ex2/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/mikia/Desktop/CS/Year 3 Semester B/OS/Exercises/OS/ex2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
