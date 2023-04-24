@@ -10,4 +10,5 @@ add_executable(ex2
         demo_jmp.c
         demo_singInt_handler.c
         uthreads.cpp
-        uthreads.h)
+        uthreads.h
+        basic_test.cpp)
