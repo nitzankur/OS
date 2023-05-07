@@ -2,6 +2,7 @@
 #define MAPREDUCEFRAMEWORK_H
 
 #include "MapReduceClient.h"
+#include <iostream>
 using namespace std;
 
 /**
@@ -48,7 +49,8 @@ void emit3 (K3* key, V3* value, void* context);
  * @return The function returns JobHandle that will be used for monitoring the job.
  */
 JobHandle startMapReduceJob(const MapReduceClient& client,
-	const InputVec& inputVec, OutputVec& outputVec,
+	const InputVec& inputVec,
+    OutputVec& outputVec,
 	int multiThreadLevel);
 
 /**

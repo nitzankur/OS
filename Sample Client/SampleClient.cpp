@@ -8,9 +8,9 @@
 using namespace std;
 
 class JobContext {
+private:
 
 };
-
 
 class VString : public V1 {
 public:
@@ -118,6 +118,6 @@ public:
 //	return 0;
 //}
 
-int main(int argc, char** argv) {
-    cout << "yo" << endl;
-}
+//int main(int argc, char** argv) {
+//    cout << "yo" << endl;
+//}
