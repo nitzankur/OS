@@ -38,11 +38,11 @@ int main(int argc, char** argv)
     for (int i = 0; i < MT_LEVEL; ++i) {
         contexts[i] = {i, &atomic_counter};
     }
-    
+
     for (int i = 0; i < MT_LEVEL; ++i) {
         pthread_create(threads + i, NULL, count, contexts + i);
     }
-    
+
     for (int i = 0; i < MT_LEVEL; ++i) {
         pthread_join(threads[i], NULL);
     }
@@ -51,6 +51,6 @@ int main(int argc, char** argv)
     printf("atomic counter first 16 bit: %d\n", atomic_counter.load() & (0xffff));
     printf("atomic counter next 15 bit: %d\n", atomic_counter.load()>>16 & (0x7fff));
     printf("atomic counter last 2 bit: %d\n", atomic_counter.load()>>30);
-    
+
     return 0;
 }
